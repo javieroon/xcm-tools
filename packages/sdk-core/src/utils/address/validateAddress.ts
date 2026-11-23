@@ -52,4 +52,4 @@ export const validateAddress = <TApi, TRes, TSigner, TCustomChain extends string
       }
     }
   }
-        }
+}
