@@ -5,6 +5,8 @@ import type { PolkadotApi } from '../../api'
 import { InvalidAddressError } from '../../errors'
 import type { TAddress } from '../../types'
 
+const PUBLIC_KEY_REGEX = /^0x[0-9a-fA-F]{64}$/
+
 export const validateAddress = <TApi, TRes, TSigner, TCustomChain extends string = never>(
   api: PolkadotApi<TApi, TRes, TSigner, TCustomChain>,
   address: TAddress,
@@ -33,6 +35,13 @@ export const validateAddress = <TApi, TRes, TSigner, TCustomChain extends string
     }
 
     if (isPublicKeyFormat) {
+      // The hex is used verbatim as the AccountId32, so anything other than exactly 32 bytes
+      // would be truncated or shifted into a different account.
+      if (!PUBLIC_KEY_REGEX.test(address)) {
+        throw new InvalidAddressError(
+          `Invalid public key: ${address}. Expected a 32-byte hex string (0x followed by 64 hex characters).`
+        )
+      }
       return
     }
 
@@ -43,4 +52,4 @@ export const validateAddress = <TApi, TRes, TSigner, TCustomChain extends string
       }
     }
   }
-}
+        }
